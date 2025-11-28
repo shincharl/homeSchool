@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {io} from "socket.io-client";
 
 const socket = io("http://localhost:3000"); // 연결할 서버 주소
@@ -7,27 +7,71 @@ const ChatRoom = () => {
 
     const [inRoom, setInRoom] = useState(false);
     const [roomName, setRoomName] = useState("");
+    const [roomsList, setRoomsList] = useState<string[]>([]);
+    const [messages, setMessages] = useState<string[]>([]);
 
-    const formRef = useRef<HTMLFormElement | null>(null);
-    const inputRef = useRef<HTMLInputElement | null>(null);
+    const roomInputRef = useRef<HTMLFormElement | null>(null);
+    const messageInputRef = useRef<HTMLInputElement | null>(null);
+    const nicknameInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleRoomSubmit = (event : React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if(!inputRef.current) return;
-
-        const value = inputRef.current.value;
+        if(!roomInputRef.current) return;
+        const value = roomInputRef.current.value;
 
         socket.emit("enter_room", value, () => {
-            console.log("Joined room:", value);
-
             setRoomName(value);
             setInRoom(true); // 화면 전환
         });
 
-        inputRef.current.value = "";
+        roomInputRef.current.value = "";
 
     }
+
+    const handleMessageSubmit = (event : React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if(!messageInputRef.current) return;
+        const value = messageInputRef.current.value;
+
+        socket.emit("new_message", value, roomName, () => {
+            setMessages(prev => [...prev, `You: ${value}`]);
+        });
+
+        messageInputRef.current.value = "";
+        
+    }
+
+    const handleNicknameSubmit = (event : React.FormEvent<HTMLFormElement>) => {        
+        event.preventDefault();
+
+        if(!nicknameInputRef.current) return;
+        const value = nicknameInputRef.current.value;
+
+        socket.emit("nickname", value);
+
+        nicknameInputRef.current.value = "";
+    }
+
+    useEffect(() => {
+        socket.on("welcome", (userNickname) => {
+            setMessages(prev => [...prev, `${userNickname} arrived!`]);
+        });
+
+        socket.on("bye", (userNickname) => {
+            setMessages(prev => [...prev, `${userNickname} left ㅠㅠ`]);
+        });
+
+        socket.on("new_message", (message) => {
+            setMessages(prev => [...prev, message]);
+        });
+
+        socket.on("room_change", (rooms) => {
+            setRoomsList(rooms);
+        });
+
+    }, []);
 
     return(
             <>
@@ -36,10 +80,16 @@ const ChatRoom = () => {
                 {/* 방 들어가기 전에만 보이는 화면 */}
                 {!inRoom && (
                     <div id="welcome">
-                        <form ref={formRef} onSubmit={handleRoomSubmit}>
-                            <input ref={inputRef} type="text" placeholder="room name" required />
+                        <form onSubmit={handleRoomSubmit}>
+                            <input ref={roomInputRef} type="text" placeholder="room name" required />
                             <button>Enter Room</button>
                         </form>
+                        <h4>Open Rooms:</h4>
+                        <ul>
+                            {roomsList.map((room, i) => (
+                                <li key={i}>{room}</li>
+                            ))}
+                        </ul>
                     </div>
                 )}
 
@@ -47,9 +97,19 @@ const ChatRoom = () => {
                 {inRoom && (
                     <div id="room">
                         <h2>Room: {roomName}</h2>
-                        <ul></ul>
-                        <form>
-                            <input type="text" placeholder="message" required/>
+                        <ul>
+                            {messages.map((message, i) => (
+                                <li key={i}>{message}</li>
+                            ))}
+                        </ul>
+                        
+                        <form id="name" onSubmit={handleNicknameSubmit}>
+                            <input ref={nicknameInputRef} type="text" placeholder="nickname" required/>
+                            <button>Save</button>
+                        </form>
+
+                        <form id="msg" onSubmit={handleMessageSubmit}>
+                            <input ref={messageInputRef} type="text" placeholder="message" required/>
                             <button>Send</button>
                         </form>
                     </div>
