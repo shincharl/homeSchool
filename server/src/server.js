@@ -31,7 +31,13 @@ const publicRooms = () => {
   return publicRooms;
 };
 
+const countRoom = (roomName) => {
+  return wsServer.sockets.adapter.rooms.get(roomName)?.size || 0;
+};
+
 wsServer.on("connection", (socket) => {
+  socket.emit("room_change", publicRooms());
+
   socket["nickname"] = "Anon";
 
   socket.onAny((event) => {
@@ -40,15 +46,16 @@ wsServer.on("connection", (socket) => {
   });
 
   socket.on("enter_room", (roomName, done) => {
-    done();
     socket.join(roomName);
-    socket.to(roomName).emit("welcome", socket.nickname);
+    const newCount = countRoom(roomName);
+    done(newCount);
+    socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
     wsServer.sockets.emit("room_change", publicRooms());
   });
 
   socket.on("disconnecting", () => {
     socket.rooms.forEach((room) => {
-      socket.to(room).emit("bye", socket.nickname);
+      socket.to(room).emit("bye", socket.nickname, countRoom(room) - 1);
     });
   });
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {io} from "socket.io-client";
+import Videos from "./Videos";
 
 const socket = io("http://localhost:3000"); // 연결할 서버 주소
 
@@ -7,6 +8,7 @@ const ChatRoom = () => {
 
     const [inRoom, setInRoom] = useState(false);
     const [roomName, setRoomName] = useState("");
+    const [memberNum, setMemberNum] = useState(0);
     const [roomsList, setRoomsList] = useState<string[]>([]);
     const [messages, setMessages] = useState<string[]>([]);
 
@@ -20,8 +22,9 @@ const ChatRoom = () => {
         if(!roomInputRef.current) return;
         const value = roomInputRef.current.value;
 
-        socket.emit("enter_room", value, () => {
+        socket.emit("enter_room", value, (newCount: number) => {
             setRoomName(value);
+            setMemberNum(newCount);
             setInRoom(true); // 화면 전환
         });
 
@@ -55,12 +58,14 @@ const ChatRoom = () => {
     }
 
     useEffect(() => {
-        socket.on("welcome", (userNickname) => {
+        socket.on("welcome", (userNickname, newCount) => {
             setMessages(prev => [...prev, `${userNickname} arrived!`]);
+            setMemberNum(newCount);
         });
 
-        socket.on("bye", (userNickname) => {
+        socket.on("bye", (userNickname, newCount) => {
             setMessages(prev => [...prev, `${userNickname} left ㅠㅠ`]);
+            setMemberNum(newCount);
         });
 
         socket.on("new_message", (message) => {
@@ -96,7 +101,8 @@ const ChatRoom = () => {
                 {/* 방에 들어간 후에만 보이는 화면 */}
                 {inRoom && (
                     <div id="room">
-                        <h2>Room: {roomName}</h2>
+                        <Videos/>
+                        <h2>Room: {roomName}({memberNum})</h2>
                         <ul>
                             {messages.map((message, i) => (
                                 <li key={i}>{message}</li>
