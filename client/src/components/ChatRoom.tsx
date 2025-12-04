@@ -1,127 +1,68 @@
-import { useEffect, useRef, useState } from "react";
-import {io} from "socket.io-client";
+import { useContext, useState } from "react";
+import { WebRTCContext } from "../providers/WebRTCProvider";
 import Videos from "./Videos";
 
-const socket = io("http://localhost:3000"); // 연결할 서버 주소
+const ChatRoom = ({socket}) => {
+  const {startConnection, messages, sendMessage} = useContext(WebRTCContext);
 
-const ChatRoom = () => {
+   const [welcome, setWelcome] = useState(true);
+   const [room, setRoom] = useState("");
+   const [msg, setMsg] = useState("");
 
-    const [inRoom, setInRoom] = useState(false);
-    const [roomName, setRoomName] = useState("");
-    const [memberNum, setMemberNum] = useState(0);
-    const [roomsList, setRoomsList] = useState<string[]>([]);
-    const [messages, setMessages] = useState<string[]>([]);
+        const handleJoinAsGuest = async () => {
+        const roomName = room || prompt("Enter room name");
+        socket.emit("join", roomName);
+        setWelcome(false);
+        await startConnection(false); // Guest는 join 후 바로 startConnection
+    };
 
-    const roomInputRef = useRef<HTMLFormElement | null>(null);
-    const messageInputRef = useRef<HTMLInputElement | null>(null);
-    const nicknameInputRef = useRef<HTMLInputElement | null>(null);
+    const handleJoinAsHost = () => {
+    const roomName = room || prompt("Enter room name");
+    socket.emit("join", roomName);
 
-    const handleRoomSubmit = (event : React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    // Host 대기 화면 표시
+    setWelcome(false);
 
-        if(!roomInputRef.current) return;
-        const value = roomInputRef.current.value;
+    // 서버에서 호스트가 기다리라고 보냈을 때
+    socket.once("hostWaiting", () => {
+        console.log("Waiting for guest...");
+    });
 
-        socket.emit("enter_room", value, (newCount: number) => {
-            setRoomName(value);
-            setMemberNum(newCount);
-            setInRoom(true); // 화면 전환
-        });
+    // Guest가 이미 있으면 readyForOffer 이벤트
+    socket.once("readyForOffer", async () => {
+        await startConnection(true);
+    });
+    
+    };
 
-        roomInputRef.current.value = "";
 
-    }
 
-    const handleMessageSubmit = (event : React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    return (
+        <div>
+            {welcome && (
+                <div>
+                    <input value={room} onChange={(e) => setRoom(e.target.value)} placeholder="room name"/>
+                    <button onClick={handleJoinAsHost}>Join as Host</button>
+                    <button onClick={handleJoinAsGuest}>Join as Guest</button> 
+                </div>
+            )}
 
-        if(!messageInputRef.current) return;
-        const value = messageInputRef.current.value;
+            {!welcome && (
+                <div>
+                    <Videos/>
+                    <input value={msg} onChange={(e)=> setMsg(e.target.value)} />
+                    <button onClick={() => {
+                        sendMessage(msg); setMsg("");
+                        }}>Send</button>
 
-        socket.emit("new_message", value, roomName, () => {
-            setMessages(prev => [...prev, `You: ${value}`]);
-        });
-
-        messageInputRef.current.value = "";
-        
-    }
-
-    const handleNicknameSubmit = (event : React.FormEvent<HTMLFormElement>) => {        
-        event.preventDefault();
-
-        if(!nicknameInputRef.current) return;
-        const value = nicknameInputRef.current.value;
-
-        socket.emit("nickname", value);
-
-        nicknameInputRef.current.value = "";
-    }
-
-    useEffect(() => {
-        socket.on("welcome", (userNickname, newCount) => {
-            setMessages(prev => [...prev, `${userNickname} arrived!`]);
-            setMemberNum(newCount);
-        });
-
-        socket.on("bye", (userNickname, newCount) => {
-            setMessages(prev => [...prev, `${userNickname} left ㅠㅠ`]);
-            setMemberNum(newCount);
-        });
-
-        socket.on("new_message", (message) => {
-            setMessages(prev => [...prev, message]);
-        });
-
-        socket.on("room_change", (rooms) => {
-            setRoomsList(rooms);
-        });
-
-    }, []);
-
-    return(
-            <>
-                <h1>Noom</h1>
-
-                {/* 방 들어가기 전에만 보이는 화면 */}
-                {!inRoom && (
-                    <div id="welcome">
-                        <form onSubmit={handleRoomSubmit}>
-                            <input ref={roomInputRef} type="text" placeholder="room name" required />
-                            <button>Enter Room</button>
-                        </form>
-                        <h4>Open Rooms:</h4>
-                        <ul>
-                            {roomsList.map((room, i) => (
-                                <li key={i}>{room}</li>
-                            ))}
-                        </ul>
+                    <div>
+                        {messages.map((m, i) => <div key={i}>{m}</div>)}
                     </div>
-                )}
+                </div>
+            )}      
 
-                {/* 방에 들어간 후에만 보이는 화면 */}
-                {inRoom && (
-                    <div id="room">
-                        <Videos/>
-                        <h2>Room: {roomName}({memberNum})</h2>
-                        <ul>
-                            {messages.map((message, i) => (
-                                <li key={i}>{message}</li>
-                            ))}
-                        </ul>
-                        
-                        <form id="name" onSubmit={handleNicknameSubmit}>
-                            <input ref={nicknameInputRef} type="text" placeholder="nickname" required/>
-                            <button>Save</button>
-                        </form>
-
-                        <form id="msg" onSubmit={handleMessageSubmit}>
-                            <input ref={messageInputRef} type="text" placeholder="message" required/>
-                            <button>Send</button>
-                        </form>
-                    </div>
-                )}
-            </>
-        );
-    }
+        </div>
+    );
+}
 
 export default ChatRoom;
