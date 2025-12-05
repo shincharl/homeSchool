@@ -15,6 +15,11 @@ const WebRTCProvider = ({ children, socket }) => {
   const [messages, setMessages] = useState<string[]>([]);
   const [channelReady, setChannelReady] = useState(false);
 
+  // 방 입장 시 바로 로컬 카메라 켜기
+  useEffect(() => {
+    initMedia(); 
+  }, [])
+  
   // 1. 미디어 스트림 가져오기
 
   const initMedia = async () => {
@@ -27,10 +32,67 @@ const WebRTCProvider = ({ children, socket }) => {
         localStreamRef.current = stream;
         setLocalStream(stream);
 
+        // 이미 PeerConnection 생성되어 있으면 트랙 추가
+        if(peerConnectionRef.current){
+          stream.getTracks().forEach((track) => {
+            peerConnectionRef.current!.addTrack(track, stream);
+          });
+        };
+
     } catch(error){
         console.log("미디어 가져오기 실패:", error);
     }
   };
+
+  // 마이크 / 비디오 제어 함수 추가
+  const toggleAudio = () => {
+    if(localStreamRef.current){
+      const audioTrack = localStreamRef.current.getAudioTracks()[0];
+      if(audioTrack){
+        audioTrack.enabled = !audioTrack.enabled;
+      }
+    }
+  };
+
+  const toggleVideo = () => {
+    if(localStreamRef.current){
+      const videoTrack = localStreamRef.current.getVideoTracks()[0];
+      if(videoTrack){
+        videoTrack.enabled = !videoTrack.enabled;
+      }
+    }
+  };
+
+  const switchCamera = async () =>{
+    try {
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        video: {deviceId: {exact: deviceId} },
+        audio: true, // 기존 오디오도 유지
+      });
+
+      // 기존 스트림 정리
+      if(localStreamRef.current){
+        localStreamRef.current.getTracks().forEach((t) => t.stop());
+      }
+
+      // 새 스트림으로 교체
+      localStreamRef.current = newStream;
+      setLocalStream(newStream);
+
+      // peerConnection 트랙 교체
+      if (peerConnectionRef.current){
+        const videoTrack = newStream.getVideoTracks()[0];
+        const senders = peerConnectionRef.current.getSenders();
+
+        const videoSender = senders.find((s) => s.track?.kind === "video");
+        if(videoSender){
+          await videoSender.replaceTrack(videoTrack);
+        }
+      }
+    } catch (e) {
+      console.log("카메라 전환 실패:", e);
+    }
+  }
 
   // DataChannel 이벤트 설정
   const setupDataChannel = (dc: RTCDataChannel) => {
@@ -111,7 +173,18 @@ const WebRTCProvider = ({ children, socket }) => {
         if (!pc) return;
         await pc.addIceCandidate(candidate);
     });
-  }, [socket]);
+
+    // 게스트가 방에 들어올 때만 offer 생성 시작
+    socket.on("readyForOffer", async () => {
+      const pc = peerConnectionRef.current;
+      if(!pc) return;
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+
+      socket.emit("offer", offer);
+    });
+  } ,[socket]);
 
     // 내보낼 함수들
   const startConnection = async (isHost) => {
@@ -119,9 +192,7 @@ const WebRTCProvider = ({ children, socket }) => {
     const pc = createConnection(isHost);
 
     if(isHost) {
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        socket.emit("offer", offer);
+        socket.emit("host-ready");
     }
   };
 
@@ -140,6 +211,9 @@ const WebRTCProvider = ({ children, socket }) => {
         messages,
         localStream,
         remoteStream,
+        toggleAudio,
+        toggleVideo,
+        switchCamera,
       }}
     >
       {children}

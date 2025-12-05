@@ -29,7 +29,7 @@ const broadcastRooms = () => {
   io.emit("roomList", getRooms());
 };
 
-const hosts = {}; // 서버 전체 공용
+const hosts = {}; // 방마다 호스트 관리
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
@@ -49,24 +49,26 @@ io.on("connection", (socket) => {
     if (!hosts[room]) {
       hosts[room] = socket.id; // 첫 입장자가 Host
       console.log(`Host set for room ${room}: ${socket.id}`);
-      socket.emit("hostWaiting");
+      socket.emit("hostWaiting"); // 호스트 대기
     } else {
       const hostId = hosts[room];
+      io.to(hostId).emit("guestJoined");
       io.to(hostId).emit("readyForOffer");
     }
 
     // join 완료 이벤트
     socket.emit("joined", room);
+    broadcastRooms(); // 방 목록 갱신
+  });
 
-    // 방에 이미 있는 다른 소켓에게 Host가 offer를 보내도 되는 신호
+  socket.on("host-ready", () => {
+    const room = socket.room;
+    if (!room) return;
+    console.log(`Host ${socket} ready in room ${room}`);
     const clients = Array.from(io.sockets.adapter.rooms.get(room) || []);
     if (clients.length > 1) {
-      // 방에 다른 소켓이 있으면 ready 신호
-      socket.to(room).emit("readyForOffer");
+      io.to(socket.id).emit("readyForOffer");
     }
-
-    // 방 목록 갱싱
-    io.emit("roomList", getRooms());
   });
 
   // Offer, Answer, ICE Candidate 전달
@@ -92,7 +94,8 @@ io.on("connection", (socket) => {
       console.log(`Host left, room ${socket.room} now has no host`);
     }
 
-    setTimeout(broadcastRooms, 0);
+    //setTimeout(broadcastRooms, 0);
+    broadcastRooms();
   });
 
   socket.on("disconnect", () => {
