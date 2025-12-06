@@ -12,21 +12,31 @@ const io = new Server(server, {
 
 // 현재 존재하는 실제 방 목록 가져오기
 const getRooms = () => {
-  const rooms = [];
-  const sids = io.sockets.adapter.sids; // 각 소켓이 가진 개인 룸
-  const allRooms = io.sockets.adapter.rooms; // 전체 룸 목록
+  const { rooms: allRooms, sids } = io.sockets.adapter;
+  const list = [];
 
   for (const [roomId, room] of allRooms) {
     if (!sids.has(roomId) && room.size > 0) {
-      rooms.push(roomId); // socket.id가 아닌 방만 추가
+      list.push({
+        roomId,
+        count: room.size,
+        max: 2, // 최대 2명
+      });
     }
   }
-  return rooms;
+  return list;
 };
 
 // 모든 클라이언트에게 방 목록 브로드캐스트
 const broadcastRooms = () => {
   io.emit("roomList", getRooms());
+};
+
+// 특정 방의 현재 인원수를 roomCount로 전송
+const broadcastRoomCount = (room) => {
+  const clients = Array.from(io.sockets.adapter.rooms.get(room) || []);
+  const count = clients.length;
+  io.to(room).emit("roomCount", count);
 };
 
 const hosts = {}; // 방마다 호스트 관리
@@ -41,14 +51,22 @@ io.on("connection", (socket) => {
 
   // 방 참여
   socket.on("join", (room) => {
-    console.log(`${socket.id} joined room ${room}`);
+    const clients = io.sockets.adapter.rooms.get(room) || new Set();
+
+    // 방이 꽉 찬 경우 (2명 초과 시 거절)
+    if (clients.size >= 2) {
+      socket.emit("roomFull", room);
+      return;
+    }
+
     socket.join(room);
     socket.room = room;
 
     // 방에 Host 등록
+    let isHost = false;
     if (!hosts[room]) {
       hosts[room] = socket.id; // 첫 입장자가 Host
-      console.log(`Host set for room ${room}: ${socket.id}`);
+      isHost = true;
       socket.emit("hostWaiting"); // 호스트 대기
     } else {
       const hostId = hosts[room];
@@ -57,14 +75,16 @@ io.on("connection", (socket) => {
     }
 
     // join 완료 이벤트
-    socket.emit("joined", room);
+    socket.emit("joinSuccess", { room, isHost });
+
+    broadcastRoomCount(room);
     broadcastRooms(); // 방 목록 갱신
   });
 
   socket.on("host-ready", () => {
     const room = socket.room;
     if (!room) return;
-    console.log(`Host ${socket} ready in room ${room}`);
+    console.log(`Host ${socket.id} ready in room ${room}`);
     const clients = Array.from(io.sockets.adapter.rooms.get(room) || []);
     if (clients.length > 1) {
       io.to(socket.id).emit("readyForOffer");
@@ -92,6 +112,10 @@ io.on("connection", (socket) => {
       // Host가 나가면 방에서 Host 제거
       delete hosts[socket.room];
       console.log(`Host left, room ${socket.room} now has no host`);
+    }
+
+    if (socket.room) {
+      broadcastRoomCount(socket.room);
     }
 
     //setTimeout(broadcastRooms, 0);

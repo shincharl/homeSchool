@@ -1,0 +1,112 @@
+.wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 50px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.logo {
+    width: 200px;
+}
+
+.menu_container {
+    display: flex;
+    align-items: center;
+    gap: 50px; /* 메뉴랑 로그인 사이 간격 */
+}
+
+.menu_container ul {
+    display: flex;
+    gap: 50px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+.menu_container ul li a {
+    display: flex;
+    flex-direction: column;
+    color: #111;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    line-height: 1.6;
+}
+
+.menu_container ul li a span {
+    color: #5b8f8f;
+    font-size: 7px;
+}
+
+.login{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 10px 20px;
+    min-width: 70px;
+    height: 20px;
+    color: #333;
+    font-size: 16px;
+    text-decoration: none;
+    background: linear-gradient(135deg, #5b8f8f, #90be70);
+    border-radius: 100px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.login::before{
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    background-color: #cae6b7;
+    border-radius: 50%;
+}
+
+.login::after{
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 6px;
+    height: 6px;
+    border-top: 2px solid #2b550e;
+    border-right: 2px solid #2b550e;
+    background: transparent;
+}
+
+.Start {
+    display: inline-block;
+    padding: 10px 20px;
+    font-weight: 700;
+    height: 20px;
+    color: #fff;
+    background: linear-gradient(135deg, #5b8f8f, #90be70);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.Start:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.start:active {
+    transform: translateY(1px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+}

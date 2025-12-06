@@ -1,17 +1,14 @@
+import { Route, Routes } from 'react-router-dom';
 import './App.css'
-import { io } from "socket.io-client"
-import ChatRoom from './components/chatRoom'
-import WebRTCProvider from './providers/WebRTCProvider'
-
-const socket = io("http://localhost:3000");
+import Home from './pages/Home';
+import Chating from './pages/Chating';
 
 function App() {
   return (
-    <>
-     <WebRTCProvider socket={socket}>
-      <ChatRoom socket={socket}/>
-     </WebRTCProvider>
-    </>
+      <Routes>
+        <Route path='/' element={<Home/>}/>
+        <Route path='/chating' element={<Chating/>}/>
+      </Routes>
   )
 }
 
