@@ -1,0 +1,63 @@
+.wrap {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    text-align: center;
+    font-family: "Pretendard", sans-serif;
+    margin-right: 90px;
+    margin-top: 3%;
+}
+
+.header h3 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.header p {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 50px;
+}
+
+.mains {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    justify-content: center;
+}
+
+.item {
+    background: #ffffff;
+    padding: 25px 20px;
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition: 0.3s ease;
+}
+
+.item:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.profile {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 15px;
+}
+
+.item h4 {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 12px 0;
+}
+
+.desc {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.7;
+    padding: 0 5px;
+}
