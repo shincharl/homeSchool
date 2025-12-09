@@ -1,4 +1,5 @@
 import Styles from '../css/Header.module.css';
+import {HashLink} from 'react-router-hash-link';
 
 const Header = () => {
     return(
@@ -9,9 +10,9 @@ const Header = () => {
                 </div>
                 <div className={Styles.menu_container}>
                     <ul>
-                        <li><a href="#"><span>About</span>소개</a></li>
-                        <li><a href="#"><span>Service</span>서비스</a></li>
-                        <li><a href="#"><span>Contact</span>문의</a></li>
+                        <li><HashLink smooth to="/#about"><span>About</span>소개</HashLink></li>
+                        <li><HashLink smooth to="/#service"><span>Service</span>서비스</HashLink></li>
+                        <li><HashLink smooth to="/contacts"><span>Contact</span>문의</HashLink></li>
                     </ul>
 
                         <ul>

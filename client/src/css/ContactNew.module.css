@@ -1,0 +1,99 @@
+.pageEnvelope {
+    background-color: #90be70;
+    min-height: 100vh;
+    padding: 40px 0;
+}
+
+.wrap {
+    background-color: #fff;
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+
+    border-radius: 20px;
+    border: 2px solid #d4c8b5;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+    padding: 30px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.content {
+    margin-left: 0;
+    padding: 20px 0;
+}
+
+/* 폼 양식 디자인 */
+.formContainer {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 50px;
+    background: #f8f2e9;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+    min-height: 500px;
+    margin-top: 5%;
+}
+
+.formContainer h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #4a4a4a;
+    text-align: center;
+}
+
+form {
+    width: 100%;
+}
+
+.formGroup {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.formGroup label {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #5d5d5d;
+}
+
+.formGroup input,
+.formGroup textarea {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 16px;
+    border: 1px solid #d6c8b8;
+    border-radius: 8px;
+    background: #fff;
+    resize: none;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+    outline: none;
+    border-radius: #b89f84;
+    box-shadow: 0 0 5px rgba(184,159,132,0.5);
+}
+
+.submitBtn {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 18px;
+    background: #b89f84;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.submitBtn:hover {
+    background: #9c856e;
+}

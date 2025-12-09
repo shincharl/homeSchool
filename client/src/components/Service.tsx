@@ -1,8 +1,8 @@
 import Styles from '../css/Service.module.css'
 
-const Service = () => {
+const Service = ({id}) => {
     return (
-        <>
+        <section id={id} >
            <div className={Styles.wrap}>
                 <div className={Styles.header}>
                     <h3>제공하는 서비스</h3>
@@ -36,7 +36,7 @@ const Service = () => {
                         </div>
                  </div>
             </div>
-        </>
+        </section>
     );
 }
 

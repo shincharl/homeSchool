@@ -1,8 +1,8 @@
 import { FaEnvelope, FaGithub, FaPhone } from "react-icons/fa";
 import Styles from "../css/Introduce.module.css";
-const Introduce = () => {
+const Introduce = ({id}) => {
     return (
-        <>
+        <section id={id}>
             <div className={Styles.wrap}>
                 <div className={Styles.header}>
                     <h3>팀원들을 소개합니다.</h3>
@@ -30,7 +30,7 @@ const Introduce = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </section>
     );
 }
 

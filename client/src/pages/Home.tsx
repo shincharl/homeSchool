@@ -1,3 +1,4 @@
+import BackToTop from "../components/BackToTop";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import Introduce from "../components/Introduce";
@@ -20,12 +21,13 @@ const Home = () => {
                                 <img className={Styles.teach1} src="/image/teach1.jpg" alt="teach1" />
                                 <img className={Styles.teach2} src="/image/teach2.jpg" alt="teach2" />
                             </div>
-                            <Introduce/>
-                            <Service/>
+                            <Introduce id="about"/>
+                            <Service id="service"/>
                     </div>
                 </div>
             </div>
             <Footer/>
+            <BackToTop/>
         </>
     );
 }
