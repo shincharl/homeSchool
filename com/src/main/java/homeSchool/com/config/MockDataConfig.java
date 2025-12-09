@@ -1,4 +1,4 @@
 package homeSchool.com.config;
 
-public class SecurityConfig {
+public class MockDataConfig {
 }
