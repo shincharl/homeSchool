@@ -85,3 +85,112 @@
     color: #6b4f2d;
     text-decoration: underline;
 }
+
+
+/* 페이지 버튼 컨테이너 */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 50px;
+
+}
+
+/* 이전/다음 버튼 스타일 */
+.pagination button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 25px;
+    background: linear-gradient(135deg, #5b8f8f, #90be70);
+    color: black;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.pagination button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* 페이지 숫자 디자인 */
+
+.pagination span {
+    min-width: 50px;
+    text-align: center;
+}
+
+/* 작성하기 버튼 디자인 */
+
+.writeBtnContainer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 50px;
+}
+
+.writeBtn {
+    display: inline-block;
+    padding: 12px 30px;
+    font-weight: 700;
+    font-size: 14px;
+    color: black;
+    text-decoration: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #5b8f8f, #90be70);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.writeBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.writeBtn:active {
+    transform: translateY(1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* 게시판 검색 부분 디자인 */
+
+.searchContainer {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.searchContainer input {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.searchContainer button {
+    padding: 8px 16px;
+    border-radius: 50px;
+    border: none;
+    background: linear-gradient(135deg, #5b8f8f, #90be70);
+    color: black;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.searchContainer button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+}

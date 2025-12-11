@@ -1,6 +1,7 @@
 package homeSchool.com.dto;
 
 import homeSchool.com.entity.Contact;
+import homeSchool.com.entity.Member;
 import lombok.*;
 
 @AllArgsConstructor
@@ -13,11 +14,12 @@ public class ContactFormDTO {
 
     private String content;
 
-    public Contact toEntity() {
+    public Contact toEntity(Member member) {
         return Contact.builder()
                 .title(title)
                 .content(content)
                 .readCount(0)
+                .member(member)
                 .build();
     }
 }

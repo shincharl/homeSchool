@@ -1,5 +1,6 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import BackToTop from '../components/BackToTop';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
@@ -7,14 +8,25 @@ import Styles from '../css/ContactNew.module.css';
 
 const ContactNew = () => {
 
+    const navigate = useNavigate();
+
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
 
+        if(!title.trim()){
+            alert("제목을 입력해주세요.");
+            return;
+        }
+        if(!content.trim()){
+            alert("내용을 입력해주세요.");
+            return;
+        }
+
         try {
-            const response = await fetch("http://localhost:8080/contact/new", {
+            const response = await fetch("http://localhost:8080/api/contact/new", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -26,6 +38,14 @@ const ContactNew = () => {
                 }),
             });
 
+            if(response.status === 401){
+                const data = await response.json();
+                if(data.redirect){
+                    navigate(data.redirect); // React 로그인 페이지로 이동
+                }
+                throw new Error("로그인 필요");
+            }
+
             if(!response.ok){
                 throw new Error("서버 오류");
             }
@@ -36,9 +56,18 @@ const ContactNew = () => {
             alert("문의가 등록되었습니다!");
         } catch (error) {
             console.error(error);
-            alert("문의 등록 실패!");
+            alert("정상적이지 않은 로그인 활동 입니다.");
         }
     };
+
+    useEffect(() => {
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+        if(isLoggedIn !== "true"){
+            alert("로그인이 필요합니다.");
+            navigate("/login");
+        }
+    }, [navigate]);
 
     return (
         <>

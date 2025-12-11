@@ -1,0 +1,111 @@
+.pageEnvelope {
+    background-color: #90be70;
+    min-height: 100vh;
+    padding: 40px 0;
+}
+
+.wrap {
+    background-color: #fff;
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+
+    border-radius: 20px;
+    border: 2px solid #d4c8b5;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+    padding: 30px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.content {
+    width: 100%;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.loginBox {
+    width: 100%;
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+.loginBox h2 {
+    margin-bottom: 25px;
+    font-size: 28px;
+    color: #333;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.inputGroup{
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.inputGroup label {
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #555;
+}
+
+.inputGroup input {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.inputGroup input:focus {
+    border-color: #d9b48f;
+    box-shadow: 0 0 5px rgba(217, 180, 143, 0.3);
+}
+
+.loginBtn {
+    margin-top: 10px;
+    padding: 12px;
+    background: #d9b48f;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.loginBtn:hover {
+    background: #c19f7a;
+}
+
+.bottomLinks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.bottomLinks a, .bottomLinks a:visited {
+    color: #d9b48f;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.bottomLinks a:hover {
+    text-decoration: underline;
+}

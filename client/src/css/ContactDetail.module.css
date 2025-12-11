@@ -64,3 +64,23 @@
     padding: 100px 0;
     font-size: 20px;
 }
+
+.deleteBtn {
+  background: #ff7b7b;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: 0.2s;
+}
+
+.deleteBtn:hover {
+    background: #ff5c5c;
+}
+
+.deleteBtn:active {
+    background: #e44f4f;
+}

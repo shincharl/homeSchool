@@ -5,6 +5,9 @@ import Chating from './pages/Chating';
 import Contacts from './pages/Contacts';
 import ContactNew from './pages/ContactNew';
 import ContactDetail from './pages/ContactDetail';
+import Login from './pages/Login';
+import PrivateRoute from './components/privateRoute';
+import Register from './pages/Register';
 
 function App() {
   return (
@@ -12,8 +15,17 @@ function App() {
         <Route path='/' element={<Home/>}/>
         <Route path='/chating' element={<Chating/>}/>
         <Route path='/contacts' element={<Contacts/>}/>
-        <Route path='/contact/new' element={<ContactNew/>}/>
+        <Route 
+          path='/contact/new'
+          element={
+            <PrivateRoute>
+              <ContactNew />
+            </PrivateRoute>
+          }
+        />
         <Route path='/contact/:id' element={<ContactDetail/>}/>
+        <Route path='/login' element={<Login/>}/>
+        <Route path='/register' element={<Register/>}/>
       </Routes>
   )
 }
