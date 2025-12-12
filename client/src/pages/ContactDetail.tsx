@@ -86,7 +86,10 @@ const ContactDetail = () => {
                             </Link>
 
                             {nickname?.trim() === post.memberNickname?.trim() && (
-                                <button className={Styles.deleteBtn} onClick={handleDelete}>삭제하기</button>
+                                <>
+                                    <button className={Styles.deleteBtn} onClick={handleDelete}>삭제하기</button>
+                                    <button className={Styles.editBtn} onClick={() => navigate(`/contact/edit/${post.id}`)}>수정하기</button>
+                                </>
                             )}
                         </div>
                     </div>

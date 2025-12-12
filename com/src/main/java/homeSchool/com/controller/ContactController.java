@@ -3,10 +3,12 @@ package homeSchool.com.controller;
 import homeSchool.com.dto.AllContactsDTO;
 import homeSchool.com.dto.ContactDetailDTO;
 import homeSchool.com.dto.ContactFormDTO;
+import homeSchool.com.dto.ContactUpdateDTO;
 import homeSchool.com.entity.Contact;
 import homeSchool.com.entity.Member;
 import homeSchool.com.repository.ContactRepository;
 import homeSchool.com.repository.MemberRepository;
+import homeSchool.com.service.ContactService;
 import homeSchool.com.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -96,7 +99,7 @@ public class ContactController {
 
         return dtoPage;
     }
-
+    // 조회 시 데이터 가져오기(상세)
     @GetMapping("/api/contact/{id}")
     @Transactional
     public ContactDetailDTO show(@PathVariable Long id){
@@ -117,6 +120,27 @@ public class ContactController {
                 contact.getCreatedAt(),
                 contact.getReadCount()
         );
+    }
+
+    private final ContactService contactService;
+
+    @PutMapping("/api/contact/{id}")
+    public ResponseEntity<?> updateContact(
+            @PathVariable Long id,
+            @RequestBody ContactUpdateDTO dto,
+            @AuthenticationPrincipal CustomUserDetails user
+            ){
+
+            System.out.println("로그인 사용자: " + user);
+        try {
+            contactService.updateContact(id, dto, user.getNickname());
+            return ResponseEntity.ok().build();
+        } catch (IllegalAccessException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("작성자만 수정할 수 있습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("수정 중 오류 발생");
+        }
     }
 
     @DeleteMapping("/api/contact/{id}")
@@ -146,5 +170,7 @@ public class ContactController {
 
         return ResponseEntity.ok("삭제 완료");
     }
+
+
 
 }

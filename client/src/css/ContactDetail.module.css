@@ -84,3 +84,23 @@
 .deleteBtn:active {
     background: #e44f4f;
 }
+
+.editBtn {
+    background: #6da7d6;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: 0.2s;
+}
+
+.editBtn:hover {
+    background: #5d97c6;
+}
+
+.editBtn:active {
+    background: #4e89b8;
+}

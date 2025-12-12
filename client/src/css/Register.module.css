@@ -109,3 +109,44 @@
 .bottomLinks a:hover {
     text-decoration: underline;
 }
+
+.inputGroup {
+    position: relative;
+}
+
+.dropdown{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border-radius: 6px;
+    z-index: 1000;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.addressList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.addressList li {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.addressList li:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 12px;
+    border-top: 1px solid #eee;
+}

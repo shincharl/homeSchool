@@ -5,7 +5,19 @@ import Header from "../components/Header";
 import Styles from "../css/Register.module.css"
 import { useNavigate } from "react-router-dom";
 
+interface JusoItem {
+    roadAddr: string; // 도로명주소
+}
+
 const Register = () => {
+
+    const [addressResult, setAddressResult] = useState<JusoItem[]>([]); // 주소 받는 state
+    const [currentPage, setCurrentPage] = useState(1); // 현재 보여줄 주소 페이지 데이터 저장
+    const itemsPerPage = 10;
+
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [isAddressSelected, setIsAddressSelected] = useState(false);
+
     const [form, setForm] = useState({
         name: "",
         nickName: "",
@@ -23,6 +35,11 @@ const Register = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if(!isAddressSelected){
+            alert("주소를 선택해주세요. 직접 입력한 값은 사용할 수 없습니다.");
+            return;
+        }
 
         // 비밀번호 검증
         const password = form.password;
@@ -58,6 +75,29 @@ const Register = () => {
             alert("회원가입 중 오류 발생");
         }
     };
+
+    // 주소 변경 될때마다 백엔드로 요청
+    const searchAddress = async (keyword: string) => {
+        if(!keyword){
+            setAddressResult([]);
+            return;
+        }
+
+        try {
+            const res = await fetch(`http://localhost:8080/api/address/search?keyword=${encodeURIComponent(keyword)}`);
+            const data: JusoItem[] = await res.json();
+
+            setAddressResult(data);  
+        } catch (error) {
+            console.log("주소 검색 오류:", error);
+        }
+
+    };
+
+    const pagedAddressResult = addressResult.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
 
     return (
         <>
@@ -133,8 +173,65 @@ const Register = () => {
                             name="address"
                             placeholder="주소를 입력하세요"
                             value={form.address}
-                            onChange={handleChange}
+                            onChange={(e) => {
+                                handleChange(e); // 기존 값 업데이트
+                                searchAddress(e.target.value); // 주소 자동 검색 실행
+                                setShowDropdown(true);
+                                setCurrentPage(1);
+                                setIsAddressSelected(false); // 주소 선택 완료
+                            }}
+                            onFocus={() => {
+                                if(addressResult.length > 0) setShowDropdown(true);
+                            }}
                         />
+
+                        {showDropdown && pagedAddressResult.length > 0 && (
+                            <div className={Styles.dropdown}>
+                                <ul className={Styles.addressList}>
+                                    {pagedAddressResult.map((item, index) => (
+                                        <li
+                                            key={index}
+                                            onClick={() => {
+                                                setForm({...form, address: item.roadAddr});
+                                                setShowDropdown(false);
+                                                setAddressResult([]);
+                                                setCurrentPage(1);
+                                                setIsAddressSelected(true);
+                                            }}
+                                            >
+                                                {item.roadAddr}
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                {addressResult.length > itemsPerPage && (
+                                    <div className={Styles.pagination}>
+                                        <button type="button" onClick={() => setCurrentPage((prev) => Math.max(prev - 1 , 1))}
+                                                disabled={currentPage === 1}
+                                            >
+                                                이전
+                                        </button>
+
+                                        <span>
+                                            {currentPage} / {Math.ceil(addressResult.length / itemsPerPage)}
+                                        </span>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => 
+                                                setCurrentPage((prev) =>
+                                                    Math.min(prev + 1, Math.ceil(addressResult.length / itemsPerPage))
+                                                )
+                                            }
+                                                disabled={currentPage === Math.ceil(addressResult.length / itemsPerPage)}
+                                            >
+                                                다음
+                                            </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         </div>
 
                         <button className={Styles.loginBtn} type="submit">

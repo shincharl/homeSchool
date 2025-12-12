@@ -8,6 +8,7 @@ import ContactDetail from './pages/ContactDetail';
 import Login from './pages/Login';
 import PrivateRoute from './components/privateRoute';
 import Register from './pages/Register';
+import EditContact from './pages/EditContact';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path='/contact/:id' element={<ContactDetail/>}/>
         <Route path='/login' element={<Login/>}/>
         <Route path='/register' element={<Register/>}/>
+        <Route path="/contact/edit/:id" element={<EditContact/>}/>
       </Routes>
   )
 }
